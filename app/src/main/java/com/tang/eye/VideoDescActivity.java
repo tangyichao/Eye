@@ -1,31 +1,35 @@
 package com.tang.eye;
 
+import android.animation.Animator;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.jakewharton.rxbinding2.view.RxView;
+import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.tang.eye.model.Daily;
-
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+
+import static android.R.attr.centerX;
 
 public class VideoDescActivity extends AppCompatActivity {
 
@@ -49,6 +53,14 @@ public class VideoDescActivity extends AppCompatActivity {
     TextView mTvAuthorDesc;
     @BindView(R.id.cv_author)
     CardView mCvAuthor;
+    @BindView(R.id.ctl)
+    CollapsingToolbarLayout mCtl;
+    @BindView(R.id.cl)
+    CoordinatorLayout mCl;
+    @BindView(R.id.cv_title_time)
+    CardView mCvTitleTime;
+    @BindView(R.id.cv_desc)
+    CardView mCvDesc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,33 +80,58 @@ public class VideoDescActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_video_desc);
         ButterKnife.bind(this);
-        Daily.ItemListBean itemListBean = (Daily.ItemListBean) getIntent().getSerializableExtra("ItemList");
-        Glide.with(this).load(itemListBean.getData().getCover().getFeed()).into(mIvDaily);
-        mTvTitle.setText(itemListBean.getData().getTitle());
-        int duration = itemListBean.getData().getDuration();
-        int minute = duration / 60;//Minute second
-        int second = duration % 60;
-        mTvTime.setText("#" + itemListBean.getData().getCategory() + " / " + minute + "' " + second + "''");
-        mTvDesc.setText(itemListBean.getData().getDescription());
-        if(itemListBean.getData().getAuthor()!=null){
-            Glide.with(this).load(itemListBean.getData().getAuthor().getIcon()).into(mCivAuthorIcon);
-            mTvAuthorName.setText(itemListBean.getData().getAuthor().getName());
-            mTvAuthorDesc.setText(itemListBean.getData().getAuthor().getDescription());
-        }else{
-            mCvAuthor.setVisibility(View.GONE);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        RxView.clicks(fab)
-                .throttleFirst(1, TimeUnit.SECONDS)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(@NonNull Object o) throws Exception {
-                        Log.i("debug", "点击了");
-                    }
-                });
+        Object itemListBean = getIntent().getSerializableExtra("ItemList");
+        if (itemListBean instanceof Daily.ItemListBean) {
+            //  mCl.setBackgroundColor(C.bgColor);
+            mCtl.setTitle(((Daily.ItemListBean) itemListBean).getData().getTitle());
+            Glide.with(this).load(((Daily.ItemListBean) itemListBean).getData().getCover().getFeed()).into(mIvDaily);
+
+            mTvTitle.setText(((Daily.ItemListBean) itemListBean).getData().getTitle());
+            int duration = ((Daily.ItemListBean) itemListBean).getData().getDuration();
+            int minute = duration / 60;//Minute second
+            int second = duration % 60;
+            mTvTime.setText("#" + ((Daily.ItemListBean) itemListBean).getData().getCategory() + " / " + minute + "' " + second + "''");
+            mTvDesc.setText(((Daily.ItemListBean) itemListBean).getData().getDescription());
+            if (((Daily.ItemListBean) itemListBean).getData().getAuthor() != null) {
+                Glide.with(this).load(((Daily.ItemListBean) itemListBean).getData().getAuthor().getIcon()).into(mCivAuthorIcon);
+                mTvAuthorName.setText(((Daily.ItemListBean) itemListBean).getData().getAuthor().getName());
+                mTvAuthorDesc.setText(((Daily.ItemListBean) itemListBean).getData().getAuthor().getDescription());
+            } else {
+                mCvAuthor.setVisibility(View.GONE);
+            }
+        } else if (itemListBean instanceof Daily.ItemListBean.DataBean.ItemListBeanX) {
+            Glide.with(this).load(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getCover().getFeed()).into(mIvDaily);
+            mTvTitle.setText(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getTitle());
+            int duration = ((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getDuration();
+            int minute = duration / 60;//Minute second
+            int second = duration % 60;
+            mTvTime.setText("#" + ((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getCategory() + " / " + minute + "' " + second + "''");
+            mTvDesc.setText(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getDescription());
+            if (((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getAuthor() != null) {
+                Glide.with(this).load(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getAuthor().getIcon()).into(mCivAuthorIcon);
+                mTvAuthorName.setText(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getAuthor().getName());
+                mTvAuthorDesc.setText(((Daily.ItemListBean.DataBean.ItemListBeanX) itemListBean).getData().getAuthor().getDescription());
+            } else {
+                mCvAuthor.setVisibility(View.GONE);
+            }
+//            Animation anim = AnimationUtils.makeInChildBottomAnimation(this);
+//            anim.setDuration(1000);
+//            mCvAuthor.startAnimation(anim);
+//            mCvDesc.startAnimation(anim);
+//            mCvTitleTime.startAnimation(anim);
+            int centerX=(mCvDesc.getRight()+mCvDesc.getLeft())/2;
+            int centerY=(mCvDesc.getBottom()+mCvDesc.getTop())/2;
+            int startRadius=0;
+            int endRadius= (int) Math.sqrt(mCvDesc.getWidth()*mCvDesc.getWidth()+mCvDesc.getHeight()*mCvDesc.getHeight());
+            Animator animator= ViewAnimationUtils.createCircularReveal(mCvDesc,centerX,centerY,startRadius,endRadius);
+            animator.setDuration(4000);
+            animator.start();
+//            mCvAuthor.animate().alpha(1).setStartDelay(100).start();
+//            mCvTitleTime.animate().alpha(1).setStartDelay(100).start();
+//            mCvDesc.animate().alpha(1).setStartDelay(100).start();
+
+        }
 
 
     }

@@ -12,9 +12,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ApiManager {
-    public static Retrofit getRetrofit(){
+    public static Retrofit getRetrofit(String url){
         OkHttpClient client=new OkHttpClient().newBuilder().readTimeout(20, TimeUnit.SECONDS).build();
-        Retrofit retrofit=new Retrofit.Builder().baseUrl("http://baobab.kaiyanapp.com/api/")
+        Retrofit retrofit=new Retrofit.Builder().baseUrl(url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client).build();

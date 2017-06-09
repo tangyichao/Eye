@@ -1,6 +1,7 @@
 package com.tang.eye.model;
 
 import com.tang.eye.ApiManager;
+import com.tang.eye.C;
 import com.tang.eye.api.DailyApi;
 import com.tang.eye.view.IDailyView;
 
@@ -22,7 +23,7 @@ public class DailyModel implements com.tang.eye.model.IDailyModel {
     @Override
     public void loadDailyModel(String num) {
         dailyView.initDaily();
-        ApiManager.getRetrofit().create(DailyApi.class).getDaily()
+        ApiManager.getRetrofit(C.KAIYAN_API).create(DailyApi.class).getDaily()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Daily>() {

@@ -1,9 +1,11 @@
 package com.tang.eye;
 
+import android.app.ActivityOptions;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ObbInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -21,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.tang.eye.adapter.DailyAdapter;
+import com.tang.eye.city.CityActivity;
 import com.tang.eye.model.Daily;
 import com.tang.eye.presenter.DailyPresenter;
 import com.tang.eye.view.IDailyView;
@@ -53,16 +56,24 @@ public class MainActivity extends AppCompatActivity implements IDailyView {
                 case R.id.navigation_home:
                     // showDateDialog();
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.navigation_find:
                     mRvDaily.setVisibility(View.GONE);
                     mPbDaily.setVisibility(View.GONE);
                     fragment = DashboardFragment.newInstance("dashboard");
                     android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.add(R.id.fragment, fragment);
                     transaction.commit();
-
                     return true;
                 case R.id.navigation_notifications:
+                    Intent cityIntent=new Intent();
+                    cityIntent.setClass(MainActivity.this, CityActivity.class);
+                    startActivity(cityIntent);
+                    return true;
+                case R.id.navigation_my:
+                    Intent intent=new Intent();
+                    intent.setClass(MainActivity.this, MainActivity.class);
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                    
                     return true;
             }
             return false;
@@ -71,14 +82,6 @@ public class MainActivity extends AppCompatActivity implements IDailyView {
 
     };
 
-    private void showDateDialog() {
-        DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            }
-        }, 2017, 10, 15);
-        dialog.show();
-    }
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -115,11 +118,12 @@ public class MainActivity extends AppCompatActivity implements IDailyView {
         mRvDaily.setAdapter(dailyAdapter);
         dailyAdapter.setOnItemClickListener(new DailyAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int type, Daily.ItemListBean itemListBean) {
+            public void onItemClick(View view, int type, Object itemListBean) {
                 if (type == 2) {
+
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, VideoDescActivity.class);
-                    intent.putExtra("ItemList", itemListBean);
+                    intent.putExtra("ItemList", (Daily.ItemListBean)itemListBean);
                     startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, "shareAnim").toBundle());
                 }
 
